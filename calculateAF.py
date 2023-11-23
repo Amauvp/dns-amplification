@@ -31,6 +31,8 @@ def sniffAllPackets():
 
 def calculateAF():
 
+    sniffAllPackets()
+    
     all_factors = {'255': [], '1': [], '28': [], '5': [], '15': [], '2': [], '6': [], '16': []}
     # ANY = 255, A = 1, AAAA = 28, CNAME = 5, MX = 15, NS = 2, SOA = 6, TXT = 16
     for query_id in queries_info:
