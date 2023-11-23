@@ -22,7 +22,7 @@ for domain in queryNames:
 
         try:
             response = sr1(dnsQuery, verbose=0, timeout=1)
-            response.show()
+            #response.show()
             
             # Check if the response was transmitted via TCP
             if response[IP].proto == 6:
@@ -32,6 +32,7 @@ for domain in queryNames:
                 successes.append(1)
         except Exception as e:
             print(f"An exception occurred: {e}\n")
+            print(dnsQuery)
             successes.append(0)
 
     # Check if the sum of successes is equal to the len of queryTypes
