@@ -14,7 +14,7 @@ for queryType in queryTypes:
     start = time.time()
     while time.time() - start < 10:
         packetNumber += 1
-        dnsQuery = IP(src=dnsSource, dst=dnsDestination) / UDP(sport=RandShort(), dport=53) / DNS(rd=1, ad=0, cd=1, qd=DNSQR(qname=domain, qtype=queryType), ar=DNSRROPT(rclass=8192))
+        dnsQuery = IP(src=dnsSource, dst=dnsDestination) / UDP(sport=RandShort(), dport=53) / DNS(rd=1, ad=0, cd=1, qd=DNSQR(qname=queryName, qtype=queryType), ar=DNSRROPT(rclass=8192))
 
         try:
             response = send(dnsQuery, verbose=0, timeout=1)
