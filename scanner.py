@@ -1,7 +1,7 @@
 from scapy.all import *
 
 dnsSource = "192.168.68.109"
-dnsDestination = "192.168.68.53"
+dnsDestination = "192.168.68.108"
 queryTypes = ["ANY", "A", "AAAA", "CNAME", "MX", "NS", "PTR", "SOA", "TXT"]
 
 queryNames = []
