@@ -1,5 +1,5 @@
 from scapy.all import *
-import time
+import json
 
 global udp_header
 udp_header = 8
@@ -11,23 +11,20 @@ global responses_info
 responses_info = {}
 
 global lastPacketTime
-lastPacketTime = time.time()
 
 def packet_handler(packet):
 
     if IP in packet and UDP in packet and DNS in packet:
-        if packet[IP].src == "victim_ip" and packet[IP].dst == "192.168.68.53" and packet[DNS].qr == 0:
-            query_info = [packet[DNSQR].qtype, len(packet[DNS].payload)]
+        if packet[IP].src == "192.168.68.115" and packet[IP].dst == "192.168.68.53" and packet[DNS].qr == 0:
+            query_info = [packet[DNSQR].qtype, len(packet[DNS])]
             queries_info[packet[DNS].id] = query_info
 
-        elif packet[IP].src == "192.168.68.53" and packet[IP].dst == "victim_ip" and packet[DNS].qr == 1:
-            response_info = [packet[DNSRR].type, len(packet[DNS].payload)]
+        elif packet[IP].src == "192.168.68.53" and packet[IP].dst == "192.168.68.115" and packet[DNS].qr == 1:
+            response_info = [packet[DNS].qd.qtype, len(packet[DNS])]
             responses_info[packet[DNS].id] = response_info
-    
-    lastPacketTime = time.time()
 
 def sniffAllPackets():
-    sniff(filter="udp and port 53", timeout=60, prn=packet_handler)
+    sniff(filter="udp and port 53", timeout=120, prn=packet_handler)
 
 def calculateAF():
 
@@ -42,3 +39,7 @@ def calculateAF():
                 all_factors[str(queries_info[query_id][0])].append(amplification_factor)
     
     return all_factors
+
+results = calculateAF()
+with open("./AF.json", 'w') as f:
+    json.dump(results, f)
