@@ -1,75 +1,46 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template
 from scapy.all import *
-import threading
-import signal
-import sys
+from flask_socketio import SocketIO, emit
+import time
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 
-# Filtrer le trafic DNS pour un nom de domaine spécifique
-def dns_traffic(pkt):
-    if pkt.haslayer(DNS) and pkt.haslayer(IP):
-        dns = pkt[DNS]
-        if dns.qname == b'amaury.thesis.io.':  # Remplacez 'example.com' par le nom de domaine recherché
-            return True
-    return False
+def packet_handler(packet):
+    packetInfo = {'Number': '', 'Time': '', 'Source': '', 'Destination': '', 'Protocol': '', 
+                 'Length': '', 'Info': ''}
+    if IP in packet and UDP in packet and DNS in packet:
+        if packet[DNS].qr == 0:
+            packetInfo['Number'] = packet[DNS].id
+            packetInfo['Time'] = time.time()
+            packetInfo['Source'] = packet[IP].src
+            packetInfo['Destination'] = packet[IP].dst
+            packetInfo['Protocol'] = 'DNS'
+            packetInfo['Length'] = len(packet[DNS])
+            packetInfo['Info'] += 'Standard query ' + str(packet[DNSQR].qtype) + ': ' + str(packet[DNSQR].qname.decode('utf-8'))
+            socketio.emit('dns_packet', {'data': packetInfo})
 
-def packet_handler(pkt, packets):
-    if dns_traffic(pkt):
-        packets.append(pkt.summary())
+        elif packet[DNS].qr == 1:
+            packetInfo['Number'] = packet[DNS].id
+            packetInfo['Time'] = time.time()
+            packetInfo['Source'] = packet[IP].src
+            packetInfo['Destination'] = packet[IP].dst
+            packetInfo['Protocol'] = 'DNS'
+            packetInfo['Length'] = len(packet[DNS])
+            packetInfo['Info'] += 'Standard query response ' + str(packet[DNSQR].qtype) + ': ' + str(packet[DNSQR].qname.decode('utf-8'))
+            for rr in packet[DNS].an:
+                packetInfo['Info'] += '\n\t' + str(rr.type) + ' ' + str(rr.rdata)
 
-# Fonction pour capturer les paquets de manière continue
-def continuous_packet_capture():
-    packets = []
-    while True:
-        sniff(filter="udp port 53", prn=packet_handler(packets), timeout=60)  # Capturer pendant 2 secondes
+            socketio.emit('dns_packet', {'data': packetInfo})
 
-# Fonction à exécuter dans un thread pour la capture continue
-def start_continuous_capture():
-    capture_thread = threading.Thread(target=continuous_packet_capture)
-    capture_thread.start()
+def sniffAllPackets():
+    sniff(filter="udp and port 53", timeout=120, prn=packet_handler)
 
-# Gérer le signal d'interruption (Ctrl+C)
-def signal_handler(sig, frame):
-    print("Arrêt de la capture.")
-    sys.exit(0)
-
-# Route pour afficher les paquets capturés en temps réel
 @app.route('/')
-def show_live_pcap():
-    html = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Live PCAP Viewer</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function(){
-                function updatePackets() {
-                    $.get('/get_packets', function(data){
-                        $('#packet_info').html(data);
-                    });
-                }
-
-                setInterval(updatePackets, 1000); // Actualiser toutes les 2 secondes
-            });
-        </script>
-    </head>
-    <body>
-        <h1>Paquets capturés en temps réel</h1>
-        <div id="packet_info"></div>
-    </body>
-    </html>
-    """
-    return render_template_string(html)
-
-# Route pour obtenir les paquets capturés au format HTML
-@app.route('/get_packets')
-def get_packets():
-    global packets
-    return "<br>".join(packets) + "<br>"
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
-    start_continuous_capture()  # Démarrer la capture dans un thread séparé
-    signal.signal(signal.SIGINT, signal_handler)  # Capturer le signal d'interruption (Ctrl+C)
-    app.run(debug=True)
+    sniffAllPackets()
+    socketio.run(app)

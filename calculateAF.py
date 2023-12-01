@@ -43,3 +43,9 @@ def calculateAF():
 results = calculateAF()
 with open("./AF.json", 'w') as f:
     json.dump(results, f)
+
+with open("./queries.json", 'w') as f2:
+    json.dump(queries_info, f2)
+
+with open("./responses.json", 'w') as f3:
+    json.dump(responses_info, f3)
