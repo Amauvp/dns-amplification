@@ -2,7 +2,7 @@ from scapy.all import *
 import time
 
 # IP of the victim
-dnsSource = "192.168.68.115"
+dnsSource = "192.168.68.106"
 dnsDestination = "192.168.68.53" # IP of the DNS server
 queryTypes = ["ALL", "A", "AAAA", "CNAME", "MX", "NS", "SOA", "TXT"]
 
