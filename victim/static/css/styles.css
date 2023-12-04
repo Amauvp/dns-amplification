@@ -12,29 +12,41 @@ h1 {
     font-size: 24px;
     margin-bottom: 20px;
 }
-.table {
+.table { /* For tables */
     background-color: #fff;
     border: 1px solid #ddd;
     border-collapse: collapse;
     margin-bottom: 20px;
     width: 100%;
 }
-th, td {
+th, td { /* For table cells */
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
-th {
+th { /* For table headers */
     background-color: #f0f0f0;
     font-weight: bold;
 }
-.dns:nth-child(even) {
-    background-color: #d0edff; /* Bleu clair pour lignes paires */
+.dns:nth-child(even) { /* For DNS even rows */
+    background-color: #d0edff;
 }
-.dns:nth-child(odd) {
-    background-color: #b5d8ff; /* Bleu un peu plus foncé pour lignes impaires */
+.dns:nth-child(odd) { /* For DNS odd rows */
+    background-color: #b5d8ff;
 }
-.info-label {
+.info-label { /* For labels */
     font-weight: bold;
     color: #00263E;
+}
+.dns_summary { /* For DNS summary */
+    max-width: 300px;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+.full_info { /* For full DNS information */
+    display: none;
+    padding-top: 5px;
+}
+.expanded .full_info { /* For full DNS information when expanded */
+    display: block;
 }
