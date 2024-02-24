@@ -50,3 +50,30 @@ th { /* For table headers */
 .expanded .full_info { /* For full DNS information when expanded */
     display: block;
 }
+/* CSS code for styling performance bars */
+.bar {
+    position: relative; /* Ajoute une position relative pour permettre le positionnement absolu du texte */
+    width: 200px;
+    height: 20px;
+    background-color: lightgray;
+    margin-bottom: 10px;
+}
+.cpu_bar {
+    background-color: green;
+}
+.memory_bar {
+    background-color: blue;
+}
+.bar::after {
+    content: attr(data-percent); /* Affiche le pourcentage à partir de l'attribut data-percent */
+    position: absolute; /* Positionne le pourcentage de façon absolue */
+    top: 0;
+    left: 50%; /* Aligne le texte au milieu de la barre */
+    transform: translateX(-50%); /* Centre horizontalement le texte */
+    color: black; /* Couleur du texte */
+    font-weight: bold;
+}
+.bandwidth_rate {
+    color: red;
+    font-weight: bold; /* Met en gras le texte du taux de bande passante pour améliorer la visibilité */
+}

@@ -5,6 +5,7 @@ import time
 import threading
 from io import StringIO
 import sys
+import psutil
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -140,6 +141,15 @@ def sniffAllPackets():
     """
     sniff(filter="udp and port 53", timeout=120, prn=packet_handler)
 
+def getPerformances():
+    while True:
+        cpuPercent = psutil.cpu_percent()
+        memoryPercent = psutil.virtual_memory().percent
+        bandwidth = (psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv) * 8/1000000
+        performanceData = {'CPU': cpuPercent, 'memory': memoryPercent, 'bandwidth': bandwidth}
+        socketio.emit('performanceData', performanceData)
+        time.sleep(2)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -149,4 +159,7 @@ if __name__ == '__main__':
     captureThread = threading.Thread(target=sniffAllPackets)
     captureThread.daemon = True
     captureThread.start()
+    capturePerf = threading.Thread(target=getPerformances)
+    capturePerf.daemon = True
+    capturePerf.start()
     socketio.run(app)

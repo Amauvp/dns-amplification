@@ -14,7 +14,7 @@ socket.on('dns_packet', function (data) {
                    "</td>" +
                    "</tr>";
 
-    document.getElementById("dns_packets").innerHTML += tableRow;
+    document.getElementById("dns_packets").insertAdjacentHTML('beforeend', tableRow);
 
     var tableRows = document.querySelectorAll('.dns'); // We recup all the rows of the table
         tableRows.forEach(function (row) {
@@ -56,3 +56,24 @@ socket.on('dns_packet', function (data) {
             fullInfo.style.display = 'none';
         });
 });
+
+// JavaScript code to receive and display system performance data
+socket.on('performanceData', function (data) {
+    updateBar('cpu_bar', data.CPU, 'cpu');
+    updateBar('memory_bar', data.memory, 'memory');
+    updateRate('bandwidth_rate', data.bandwidth);
+});
+
+// Function to update performance bar
+function updateBar(barId, value, type) {
+    var bar = document.getElementById(barId);
+    bar.style.width = value + '%';
+    bar.setAttribute('data-percent', value.toFixed(2) + '%'); // Ajoute l'attribut data-percent avec le pourcentage arrondi à deux décimales
+    bar.classList.add(type + '_bar');
+}
+
+// Function to update bandwidth rate
+function updateRate(rateId, value) {
+    var rate = document.getElementById(rateId);
+    rate.innerText = value.toFixed(2) + ' Mbps';
+}
