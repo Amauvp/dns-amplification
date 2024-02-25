@@ -75,6 +75,20 @@ if __name__ == '__main__':
     results = calculateAmplificationFactors()
     meanFactors = meanAmplificationFactor(results)
 
+    print('Number of queries: %d', len(queriesInfo))
+    print('Number of responses: %d', len(responsesInfo))
+
+    print('Number of ANY requests: %d', results['255'])
+    print('Number of A requests: %d', results['1'])
+    print('Number of AAAA requests: %d', results['28'])
+    print('Number of CNAME requests: %d', results['5'])
+    print('Number of MX requests: %d', results['15'])
+    print('Number of NS requests: %d', results['2'])
+    print('Number of SOA requests: %d', results['6'])
+    print('Number of TXT requests: %d', results['16'])
+
+    print('Mean amplification factors: %s', meanAmplificationFactor)
+
     with open("./AF.json", 'w') as f:
         json.dump(results, f)
 
