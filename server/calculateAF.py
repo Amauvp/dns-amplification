@@ -33,7 +33,7 @@ def sniffPackets(srcIP, dstIP, qname):
     :param dstIP: The destination IP address (str)
     :param qname: The query name (str)
     """
-    sniff(filter=f"udp and port 53", timeout=25, prn=lambda x: packetHandler(x, srcIP, dstIP, qname))
+    sniff(filter=f"udp and port 53", timeout=60, prn=lambda x: packetHandler(x, srcIP, dstIP, qname))
 
 def calculateAmplificationFactors():
     """
@@ -75,19 +75,19 @@ if __name__ == '__main__':
     results = calculateAmplificationFactors()
     meanFactors = meanAmplificationFactor(results)
 
-    print('Number of queries: %d', len(queriesInfo))
-    print('Number of responses: %d', len(responsesInfo))
+    print('Number of queries: ', len(queriesInfo))
+    print('Number of responses: ', len(responsesInfo))
 
-    print('Number of ANY requests: %d', results['255'])
-    print('Number of A requests: %d', results['1'])
-    print('Number of AAAA requests: %d', results['28'])
-    print('Number of CNAME requests: %d', results['5'])
-    print('Number of MX requests: %d', results['15'])
-    print('Number of NS requests: %d', results['2'])
-    print('Number of SOA requests: %d', results['6'])
-    print('Number of TXT requests: %d', results['16'])
+    print('Number of ANY requests: ', len(results['255']))
+    print('Number of A requests: ', len(results['1']))
+    print('Number of AAAA requests: ', len(results['28']))
+    print('Number of CNAME requests: ', len(results['5']))
+    print('Number of MX requests: ', len(results['15']))
+    print('Number of NS requests: ', len(results['2']))
+    print('Number of SOA requests: ', len(results['6']))
+    print('Number of TXT requests: ', len(results['16']))
 
-    print('Mean amplification factors: %s', meanAmplificationFactor)
+    print('Mean amplification factors: ', meanFactors)
 
     with open("./AF.json", 'w') as f:
         json.dump(results, f)
