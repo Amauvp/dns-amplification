@@ -93,6 +93,16 @@ def packet_handler(packet):
                     queryType = 'AAAA'
                 elif packet[DNSQR].qtype == 255:
                     queryType = 'ANY'
+                elif packet[DNSQR].qtype == 43:
+                    queryType = 'DS'
+                elif packet[DNSQR].qtype == 46:
+                    queryType = 'RRSIG'
+                elif packet[DNSQR].qtype == 47:
+                    queryType = 'NSEC'
+                elif packet[DNSQR].qtype == 48:
+                    queryType = 'DNSKEY'
+                elif packet[DNSQR].qtype == 50:
+                    queryType = 'NSEC3'
                 else: 
                     queryType = ''
 
@@ -117,6 +127,16 @@ def packet_handler(packet):
                             queryType = 'AAAA'
                         elif packet[DNS].an[i].type == 255:
                             queryType = 'ANY'
+                        elif packet[DNSQR].qtype == 43:
+                            queryType = 'DS'
+                        elif packet[DNSQR].qtype == 46:
+                            queryType = 'RRSIG'
+                        elif packet[DNSQR].qtype == 47:
+                            queryType = 'NSEC'
+                        elif packet[DNSQR].qtype == 48:
+                            queryType = 'DNSKEY'
+                        elif packet[DNSQR].qtype == 50:
+                            queryType = 'NSEC3'
                         else:
                             queryType = ''
 
