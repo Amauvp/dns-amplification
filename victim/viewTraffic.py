@@ -27,104 +27,106 @@ def packet_handler(packet):
 
     if IP in packet and UDP in packet and DNS in packet:
         # DNS query
-        if packet[DNS].qr == 0:
-            packetInfo['Number'] = packet[DNS].id
-            packetInfo['Time'] = time.time() - captureTime
-            packetInfo['Source'] = packet[IP].src
-            packetInfo['Destination'] = packet[IP].dst
-            packetInfo['Protocol'] = 'DNS'
-            packetInfo['Length'] = len(packet[DNS])
+        # print(packet[DNSQR].qname.decode())
+        if packet[DNSQR].qname.decode() == "amaury.thesis.io.":
+            if packet[DNS].qr == 0:
+                packetInfo['Number'] = packet[DNS].id
+                packetInfo['Time'] = time.time() - captureTime
+                packetInfo['Source'] = packet[IP].src
+                packetInfo['Destination'] = packet[IP].dst
+                packetInfo['Protocol'] = 'DNS'
+                packetInfo['Length'] = len(packet[DNS])
 
-            # Get the query type
-            if packet[DNS].qd.qtype == 1:
-                queryType = 'A'
-            elif packet[DNS].qd.qtype == 2:
-                queryType = 'NS'
-            elif packet[DNS].qd.qtype == 5:
-                queryType = 'CNAME'
-            elif packet[DNS].qd.qtype == 6:
-                queryType = 'SOA'
-            elif packet[DNS].qd.qtype == 15:
-                queryType = 'MX'
-            elif packet[DNS].qd.qtype == 16:
-                queryType = 'TXT'
-            elif packet[DNS].qd.qtype == 28:
-                queryType = 'AAAA'
-            elif packet[DNS].qd.qtype == 255:
-                queryType = 'ANY'
-            else:
-                queryType = ''
-        
-            packetInfo['Info'] += "Standard query <br>" + queryType + ' ' + str(packet[DNSQR].qname.decode())
+                # Get the query type
+                if packet[DNS].qd.qtype == 1:
+                    queryType = 'A'
+                elif packet[DNS].qd.qtype == 2:
+                    queryType = 'NS'
+                elif packet[DNS].qd.qtype == 5:
+                    queryType = 'CNAME'
+                elif packet[DNS].qd.qtype == 6:
+                    queryType = 'SOA'
+                elif packet[DNS].qd.qtype == 15:
+                    queryType = 'MX'
+                elif packet[DNS].qd.qtype == 16:
+                    queryType = 'TXT'
+                elif packet[DNS].qd.qtype == 28:
+                    queryType = 'AAAA'
+                elif packet[DNS].qd.qtype == 255:
+                    queryType = 'ANY'
+                else:
+                    queryType = ''
+            
+                packetInfo['Info'] += "Standard query <br>" + queryType + ' ' + str(packet[DNSQR].qname.decode())
 
-            # Store the summary of the packet
-            old_stdout = sys.stdout
-            sys.stdout = buffer = StringIO()
-            packet.show()
-            packetInfo['Summary'] += buffer.getvalue()
-            sys.stdout = old_stdout
-            socketio.emit('dns_packet', {'data': packetInfo})
+                # Store the summary of the packet
+                old_stdout = sys.stdout
+                sys.stdout = buffer = StringIO()
+                packet.show()
+                packetInfo['Summary'] += buffer.getvalue()
+                sys.stdout = old_stdout
+                socketio.emit('dns_packet', {'data': packetInfo})
 
-        # DNS response
-        elif packet[DNS].qr == 1:
-            packetInfo['Number'] = packet[DNS].id
-            packetInfo['Time'] = time.time() - captureTime
-            packetInfo['Source'] = packet[IP].src
-            packetInfo['Destination'] = packet[IP].dst
-            packetInfo['Protocol'] = 'DNS'
-            packetInfo['Length'] = len(packet[DNS])
+            # DNS response
+            elif packet[DNS].qr == 1:
+                packetInfo['Number'] = packet[DNS].id
+                packetInfo['Time'] = time.time() - captureTime
+                packetInfo['Source'] = packet[IP].src
+                packetInfo['Destination'] = packet[IP].dst
+                packetInfo['Protocol'] = 'DNS'
+                packetInfo['Length'] = len(packet[DNS])
 
-            # Get the query type
-            if packet[DNSQR].qtype == 1:
-                queryType = 'A'
-            elif packet[DNSQR].qtype == 2:
-                queryType = 'NS'
-            elif packet[DNSQR].qtype == 5:
-                queryType = 'CNAME'
-            elif packet[DNSQR].qtype == 6:
-                queryType = 'SOA'
-            elif packet[DNSQR].qtype == 15:
-                queryType = 'MX'
-            elif packet[DNSQR].qtype == 16:
-                queryType = 'TXT'
-            elif packet[DNSQR].qtype == 28:
-                queryType = 'AAAA'
-            elif packet[DNSQR].qtype == 255:
-                queryType = 'ANY'
-            else: 
-                queryType = ''
+                # Get the query type
+                if packet[DNSQR].qtype == 1:
+                    queryType = 'A'
+                elif packet[DNSQR].qtype == 2:
+                    queryType = 'NS'
+                elif packet[DNSQR].qtype == 5:
+                    queryType = 'CNAME'
+                elif packet[DNSQR].qtype == 6:
+                    queryType = 'SOA'
+                elif packet[DNSQR].qtype == 15:
+                    queryType = 'MX'
+                elif packet[DNSQR].qtype == 16:
+                    queryType = 'TXT'
+                elif packet[DNSQR].qtype == 28:
+                    queryType = 'AAAA'
+                elif packet[DNSQR].qtype == 255:
+                    queryType = 'ANY'
+                else: 
+                    queryType = ''
 
-            packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
+                packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
 
-            # Get the answer type and all the answers
-            if packet[DNS].ancount > 0:
-                for i in range(packet[DNS].ancount):
-                    if packet[DNS].an[i].type == 1:
-                        queryType = 'A'
-                    elif packet[DNS].an[i].type == 2:
-                        queryType = 'NS'
-                    elif packet[DNS].an[i].type == 5:
-                        queryType = 'CNAME'
-                    elif packet[DNS].an[i].type == 6:
-                        queryType = 'SOA'
-                    elif packet[DNS].an[i].type == 15:
-                        queryType = 'MX'
-                    elif packet[DNS].an[i].type == 16:
-                        queryType = 'TXT'
-                    elif packet[DNS].an[i].type == 28:
-                        queryType = 'AAAA'
-                    elif packet[DNS].an[i].type == 255:
-                        queryType = 'ANY'
-                    else:
-                        queryType = ''
-
-                    if hasattr(packet[DNS].an[i], 'rdata'):
-                        if isinstance(packet[DNS].an[i].rdata, bytes):
-                            packetInfo['Info'] += '\n' + queryType + ' ' + str(packet[DNS].an[i].rdata.decode()) + "<br>"
+                # Get the answer type and all the answers
+                if packet[DNS].ancount > 0:
+                    for i in range(packet[DNS].ancount):
+                        if packet[DNS].an[i].type == 1:
+                            queryType = 'A'
+                        elif packet[DNS].an[i].type == 2:
+                            queryType = 'NS'
+                        elif packet[DNS].an[i].type == 5:
+                            queryType = 'CNAME'
+                        elif packet[DNS].an[i].type == 6:
+                            queryType = 'SOA'
+                        elif packet[DNS].an[i].type == 15:
+                            queryType = 'MX'
+                        elif packet[DNS].an[i].type == 16:
+                            queryType = 'TXT'
+                        elif packet[DNS].an[i].type == 28:
+                            queryType = 'AAAA'
+                        elif packet[DNS].an[i].type == 255:
+                            queryType = 'ANY'
                         else:
-                            packetInfo['Info'] += '\n' + queryType + ' ' + str(packet[DNS].an[i].rdata) + "<br>"
-                    else:
-                        packetInfo['Info'] += '\n' + queryType + '<br>'
+                            queryType = ''
+
+                        if hasattr(packet[DNS].an[i], 'rdata'):
+                            if isinstance(packet[DNS].an[i].rdata, bytes):
+                                packetInfo['Info'] += '\n' + queryType + ' ' + str(packet[DNS].an[i].rdata.decode()) + "<br>"
+                            else:
+                                packetInfo['Info'] += '\n' + queryType + ' ' + str(packet[DNS].an[i].rdata) + "<br>"
+                        else:
+                            packetInfo['Info'] += '\n' + queryType + '<br>'
 
             # Store the summary of the packet
             old_stdout = sys.stdout
