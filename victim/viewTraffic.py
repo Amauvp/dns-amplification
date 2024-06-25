@@ -110,10 +110,48 @@ def packet_handler(packet):
 
                 if packet[DNS].arcount > 0:
                     for j in range(packet[DNS].arcount):
-                        print(packet[DNS].ar[j].rdata)
+                        if packet[DNS].ar[j].type == 48:
+                            to_print = "DNSKEY"
+                            to_print += " " + packet[DNS].ar[j].flags
+                            to_print += " " + packet[DNS].ar[j].protocol
+                            to_print += " " + packet[DNS].ar[j].algorithm
+                            to_print += " " + packet[DNS].ar[j].publickey
+                            print(to_print)
+                        elif packet[DNS].ar[j].type == 43:
+                            to_print = "DS"
+                            to_print += " " + packet[DNS].ar[j].keytag
+                            to_print += " " + packet[DNS].ar[j].algorithm
+                            to_print += " " + packet[DNS].ar[j].digesttype
+                            to_print += " " + packet[DNS].ar[j].digest.decode()
+                            print(to_print)
+                        elif packet[DNS].ar[j].type == 47:
+                            to_print = "NSEC"
+                            to_print += " " + packet[DNS].ar[j].nextname
+                            to_print += " " + packet[DNS].ar[j].typebitmaps
+                            print(to_print)
+                        elif packet[DNS].ar[j].type == 50:
+                            to_print = "NSEC3"
+                            to_print += " " + packet[DNS].ar[j].hashalg
+                            to_print += " " + packet[DNS].ar[j].flags
+                            to_print += " " + packet[DNS].ar[j].iterations
+                            to_print += " " + packet[DNS].ar[j].salt.decode()
+                            to_print += " " + packet[DNS].ar[j].nexthashedownername.decode()
+                            to_print += " " + packet[DNS].ar[j].typebitmaps
+                            print(to_print)
+                        elif packet[DNS].ar[j].type == 46:
+                            to_print = "RRSIG"
+                            to_print += " " + packet[DNS].ar[j].typecovered
+                            to_print += " " + packet[DNS].ar[j].algorithm
+                            to_print += " " + packet[DNS].ar[j].labels
+                            to_print += " " + packet[DNS].ar[j].originalttl
+                            to_print += " " + packet[DNS].ar[j].expiration
+                            to_print += " " + packet[DNS].ar[j].inception
+                            to_print += " " + packet[DNS].ar[j].keytag
+                            to_print += " " + packet[DNS].ar[j].signersname.decode()
+                            to_print += " " + packet[DNS].ar[j].signature.decode()
+                            print(to_print)
                 # Get the answer type and all the answers
                 if packet[DNS].ancount > 0:
-                    print(packet[DNS].an)
                     for i in range(packet[DNS].ancount):
                         if packet[DNS].an[i].type == 1:
                             queryType = 'A'
@@ -131,15 +169,15 @@ def packet_handler(packet):
                             queryType = 'AAAA'
                         elif packet[DNS].an[i].type == 255:
                             queryType = 'ANY'
-                        elif packet[DNSQR].qtype == 43:
+                        elif packet[DNS].an[i].type == 43:
                             queryType = 'DS'
-                        elif packet[DNSQR].qtype == 46:
+                        elif packet[DNS].an[i].type == 46:
                             queryType = 'RRSIG'
-                        elif packet[DNSQR].qtype == 47:
+                        elif packet[DNS].an[i].type == 47:
                             queryType = 'NSEC'
-                        elif packet[DNSQR].qtype == 48:
+                        elif packet[DNS].an[i].type == 48:
                             queryType = 'DNSKEY'
-                        elif packet[DNSQR].qtype == 50:
+                        elif packet[DNS].an[i].type == 50:
                             queryType = 'NSEC3'
                         else:
                             queryType = ''
