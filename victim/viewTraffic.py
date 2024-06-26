@@ -6,6 +6,7 @@ import threading
 from io import StringIO
 import sys
 import psutil
+import binascii
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -108,8 +109,11 @@ def packet_handler(packet):
 
                 packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
 
-                # if packet[DNS].arcount > 0:
-                #     for j in range(packet[DNS].arcount):
+                if packet[DNS].arcount > 0:
+                    for j in range(packet[DNS].arcount):
+                        if packet[DNS].ar[j].type == 46:
+                            signature = binascii.hexlify(packet[DNS].ar[j].signature).decode('ascii')
+                            print(signature)
                 #         if packet[DNS].ar[j].type == 48:
                 #             to_print = "DNSKEY"
                 #             to_print += " " + packet[DNS].ar[j].flags
@@ -138,7 +142,6 @@ def packet_handler(packet):
                 #             to_print += " " + packet[DNS].ar[j].nexthashedownername.decode()
                 #             to_print += " " + packet[DNS].ar[j].typebitmaps
                 #             print(to_print)
-                #         elif packet[DNS].ar[j].type == 46:
                 #             to_print = "RRSIG"
                 #             to_print += " " + packet[DNS].ar[j].typecovered
                 #             to_print += " " + packet[DNS].ar[j].algorithm
@@ -173,10 +176,8 @@ def packet_handler(packet):
                             queryType = 'DS'
                         elif packet[DNS].an[i].type == 46:
                             queryType = 'RRSIG'
-                            try:
-                                print(packet[DNS].an[i].signature.decode('utf-8'))
-                            except UnicodeDecodeError:
-                                print(packet[DNS].an[i].signature.decode('latin-1'))
+                            signature = binascii.hexlify(packet[DNS].ar[j].signature).decode('ascii')
+                            print(signature)
                         elif packet[DNS].an[i].type == 47:
                             queryType = 'NSEC'
                         elif packet[DNS].an[i].type == 48:
