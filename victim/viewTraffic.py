@@ -177,8 +177,17 @@ def packet_handler(packet):
                             queryType = 'DS'
                         elif packet[DNS].an[i].type == 46:
                             queryType = 'RRSIG'
-                            to_print = base64.b64encode(packet[DNS].an[i].signature).decode('ascii')
-                            print(to_print)
+                            complete_record = queryType
+                            complete_record += " " + str(packet[DNS].an[i].typecovered)
+                            complete_record += " " + str(packet[DNS].an[i].algorithm)
+                            complete_record += " " + str(packet[DNS].an[i].labels)
+                            complete_record += " " + str(packet[DNS].an[i].originalttl)
+                            complete_record += " " + str(packet[DNS].an[i].expiration)
+                            complete_record += " " + str(packet[DNS].an[i].inception)
+                            complete_record += " " + str(packet[DNS].an[i].keytag)
+                            complete_record += " " + str(packet[DNS].an[i].signersname)
+                            complete_record += " " + base64.b64encode(packet[DNS].an[i].signature).decode('ascii')
+                            print(complete_record)
                         elif packet[DNS].an[i].type == 47:
                             queryType = 'NSEC'
                         elif packet[DNS].an[i].type == 48:
