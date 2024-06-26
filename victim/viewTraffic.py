@@ -109,11 +109,11 @@ def packet_handler(packet):
 
                 packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
 
-                if packet[DNS].arcount > 0:
-                    for j in range(packet[DNS].arcount):
-                        if packet[DNS].ar[j].type == 46:
-                            to_print = binascii.hexlify(packet[DNS].ar[j].signature).decode('ascii')
-                            print(to_print)
+                # if packet[DNS].arcount > 0:
+                #     for j in range(packet[DNS].arcount):
+                #         if packet[DNS].ar[j].type == 46:
+                #             to_print = binascii.hexlify(packet[DNS].ar[j].signature).decode('ascii')
+                #             print(to_print)
                 #         if packet[DNS].ar[j].type == 48:
                 #             to_print = "DNSKEY"
                 #             to_print += " " + packet[DNS].ar[j].flags
