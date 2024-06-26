@@ -173,7 +173,7 @@ def packet_handler(packet):
                             queryType = 'DS'
                         elif packet[DNS].an[i].type == 46:
                             queryType = 'RRSIG'
-                            print(packet[DNS].an[i].signature)
+                            print(packet[DNS].an[i].signature.decode('utf-8'))
                         elif packet[DNS].an[i].type == 47:
                             queryType = 'NSEC'
                         elif packet[DNS].an[i].type == 48:
