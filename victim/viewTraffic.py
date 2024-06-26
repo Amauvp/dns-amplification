@@ -176,7 +176,7 @@ def packet_handler(packet):
                             queryType = 'DS'
                         elif packet[DNS].an[i].type == 46:
                             queryType = 'RRSIG'
-                            hex_string = packet[DNS].an[i].signature.decode('ascii')
+                            hex_string = binascii.hexlify(packet[DNS].an[i].signature).decode('ascii')
                             byte_string = bytes.fromhex(hex_string)
                             to_print = byte_string.decode('utf-8')
                             print(to_print)
