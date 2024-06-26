@@ -7,6 +7,7 @@ from io import StringIO
 import sys
 import psutil
 import binascii
+import base64
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -176,9 +177,7 @@ def packet_handler(packet):
                             queryType = 'DS'
                         elif packet[DNS].an[i].type == 46:
                             queryType = 'RRSIG'
-                            hex_string = binascii.hexlify(packet[DNS].an[i].signature).decode('ascii')
-                            byte_string = bytes.fromhex(hex_string)
-                            to_print = byte_string.decode('utf-8')
+                            to_print = base64.b64encode(packet[DNS].an[i].signature).decode('ascii')
                             print(to_print)
                         elif packet[DNS].an[i].type == 47:
                             queryType = 'NSEC'
