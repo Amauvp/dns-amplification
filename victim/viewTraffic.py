@@ -71,7 +71,6 @@ def packet_handler(packet):
 
             # DNS response
             elif packet[DNS].qr == 1:
-                print("OK")
                 packetInfo['Number'] = packet[DNS].id
                 packetInfo['Time'] = time.time() - captureTime
                 packetInfo['Source'] = packet[IP].src
@@ -95,6 +94,7 @@ def packet_handler(packet):
                 elif packet[DNSQR].qtype == 28:
                     queryType = 'AAAA'
                 elif packet[DNSQR].qtype == 255:
+                    print("OK")
                     queryType = 'ANY'
                 else: 
                     queryType = ''
@@ -119,6 +119,7 @@ def packet_handler(packet):
                         elif packet[DNS].an[i].type == 28:
                             queryType = 'AAAA'
                         elif packet[DNS].an[i].type == 255:
+                            print("OK2")
                             queryType = 'ANY'
                         elif packet[DNS].an[i].type == 43:
                             queryType = 'DS'
