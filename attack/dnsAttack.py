@@ -18,7 +18,7 @@ def sendQuery(dnsSource, dnsDestination, queryName, duration, packetNumber, use_
 
         if use_dnssec:
             dnsQuery[DNS].ad = 1
-            dnsQuery[DNS].cd = 1
+            dnsQuery[DNS].cd = 0
             dnsQuery[DNS].qr = 0
             dnsQuery[DNS].aa = 0
             dnsQuery[DNS].ra = 1
