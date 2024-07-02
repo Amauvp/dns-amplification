@@ -102,6 +102,7 @@ def packet_handler(packet):
 
                 # Get the answer type and all the answers
                 if packet[DNS].ancount > 0:
+                    print("OK")
                     for i in range(packet[DNS].ancount):
                         if packet[DNS].an[i].type == 1:
                             queryType = 'A'
