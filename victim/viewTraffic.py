@@ -105,25 +105,22 @@ def packet_handler(packet):
                 if packet[DNS].ancount > 0:
                     for i in range(packet[DNS].ancount):
                         if packet[DNS].an[i].type == 1:
-                            queryType = 'A'
+                            recordType = 'A'
                         elif packet[DNS].an[i].type == 2:
-                            queryType = 'NS'
+                            recordType = 'NS'
                         elif packet[DNS].an[i].type == 5:
-                            queryType = 'CNAME'
+                            recordType = 'CNAME'
                         elif packet[DNS].an[i].type == 6:
-                            queryType = 'SOA'
+                            recordType = 'SOA'
                         elif packet[DNS].an[i].type == 15:
-                            queryType = 'MX'
+                            recordType = 'MX'
                         elif packet[DNS].an[i].type == 16:
-                            queryType = 'TXT'
+                            recordType = 'TXT'
                         elif packet[DNS].an[i].type == 28:
-                            queryType = 'AAAA'
-                        elif packet[DNS].an[i].type == 255:
-                            print("OK2")
-                            queryType = 'ANY'
+                            recordType = 'AAAA'
                         elif packet[DNS].an[i].type == 43:
-                            queryType = 'DS'
-                            complete_record = queryType
+                            recordType = 'DS'
+                            complete_record = recordType
                             complete_record += " " + str(packet[DNS].an[i].keytag)
                             complete_record += " " + str(packet[DNS].an[i].algorithm)
                             complete_record += " " + str(packet[DNS].an[i].digesttype)
@@ -131,8 +128,8 @@ def packet_handler(packet):
 
                             packetInfo['Info'] += '\n' + complete_record + "<br>"
                         elif packet[DNS].an[i].type == 46:
-                            queryType = 'RRSIG'
-                            complete_record = queryType
+                            recordType = 'RRSIG'
+                            complete_record = recordType
                             complete_record += " " + str(packet[DNS].an[i].typecovered)
                             complete_record += " " + str(packet[DNS].an[i].algorithm)
                             complete_record += " " + str(packet[DNS].an[i].labels)
@@ -145,22 +142,23 @@ def packet_handler(packet):
                             
                             packetInfo['Info'] += '\n' + complete_record + "<br>"
                         elif packet[DNS].an[i].type == 47:
-                            queryType = 'NSEC'
-                            complete_record = queryType
+                            recordType = 'NSEC'
+                            complete_record = recordType
                             complete_record += " " + str(packet[DNS].an[i].nextname.decode())
                             complete_record += " " + str(packet[DNS].an[i].typebitmaps)
 
                             packetInfo += '\n' + complete_record + "<br>"
                         elif packet[DNS].an[i].type == 48:
-                            queryType = 'DNSKEY'
-                            complete_record = queryType
+                            recordType = 'DNSKEY'
+                            complete_record = recordType
                             complete_record += " " + str(packet[DNS].an[i].flags)
                             complete_record += " " + str(packet[DNS].an[i].protocol)
                             complete_record += " " + str(packet[DNS].an[i].algorithm)
                             complete_record += " " + packet[DNS].an[i].publickey.decode()
+                            packetInfo += '\n' + complete_record + "<br>"
                         elif packet[DNS].an[i].type == 50:
-                            queryType = 'NSEC3'
-                            complete_record = queryType
+                            recordType = 'NSEC3'
+                            complete_record = recordType
                             complete_record += " " + str(packet[DNS].an[i].hashalg)
                             complete_record += " " + str(packet[DNS].an[i].flags)
                             complete_record += " " + str(packet[DNS].an[i].iterations)
@@ -175,11 +173,11 @@ def packet_handler(packet):
 
                         if hasattr(packet[DNS].an[i], 'rdata'):
                             if isinstance(packet[DNS].an[i].rdata, bytes):
-                                packetInfo['Info'] += '\n' + queryType + ' ' + str(packet[DNS].an[i].rdata.decode()) + "<br>"
+                                packetInfo['Info'] += '\n' + recordType + ' ' + str(packet[DNS].an[i].rdata.decode()) + "<br>"
                             else:
-                                packetInfo['Info'] += '\n' + queryType + ' ' + str(packet[DNS].an[i].rdata) + "<br>"
+                                packetInfo['Info'] += '\n' + recordType + ' ' + str(packet[DNS].an[i].rdata) + "<br>"
                         else:
-                            packetInfo['Info'] += '\n' + queryType + '<br>'
+                            packetInfo['Info'] += '\n' + recordType + '<br>'
 
             # Store the summary of the packet
             old_stdout = sys.stdout
