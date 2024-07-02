@@ -71,6 +71,7 @@ def packet_handler(packet):
 
             # DNS response
             elif packet[DNS].qr == 1:
+                print("OK")
                 packetInfo['Number'] = packet[DNS].id
                 packetInfo['Time'] = time.time() - captureTime
                 packetInfo['Source'] = packet[IP].src
@@ -102,7 +103,6 @@ def packet_handler(packet):
 
                 # Get the answer type and all the answers
                 if packet[DNS].ancount > 0:
-                    print("OK")
                     for i in range(packet[DNS].ancount):
                         if packet[DNS].an[i].type == 1:
                             queryType = 'A'
