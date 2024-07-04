@@ -79,7 +79,10 @@ def packet_handler(packet):
                 packetInfo['Length'] = len(packet[DNS])
 
                 # Get the query type
-                if packet[DNSQR].qtype == 1:
+                if packet[DNS].qr == 1 and packet[DNS].qd.qtype == 255 and packet[DNS].ancount > 0:
+                    print("OK")
+                    queryType = 'ANY'
+                elif packet[DNSQR].qtype == 1:
                     queryType = 'A'
                 elif packet[DNSQR].qtype == 2:
                     queryType = 'NS'
@@ -93,9 +96,9 @@ def packet_handler(packet):
                     queryType = 'TXT'
                 elif packet[DNSQR].qtype == 28:
                     queryType = 'AAAA'
-                elif packet[DNS].qd.qtype == 255:
-                    print("OK")
-                    queryType = 'ANY'
+                # elif packet[DNS].qr == 1 and packet[DNS].qd.qtype == 255 and packet[DNS].ancount > 0:
+                #     print("OK")
+                #     queryType = 'ANY'
                 else: 
                     queryType = ''
 
