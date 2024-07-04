@@ -126,7 +126,7 @@ def packet_handler(packet):
                         elif packet[DNS].an[i].type == 43:
                             recordType = 'DS'
                             complete_record = recordType
-                            complete_record += " " + str(packet[DNS].an[i].keytag) + " " + str(packet[DNS].an[i].algorithm) + " " str(packet[DNS].an[i].digesttype) + " " + str(packet[DNS].an[i].digest.decode())
+                            complete_record += " " + str(packet[DNS].an[i].keytag) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].digesttype) + " " + str(packet[DNS].an[i].digest.decode())
                             packetInfo['Info'] += '\n' + complete_record + "<br>"
                         elif packet[DNS].an[i].type == 46:
                             recordType = 'RRSIG'
