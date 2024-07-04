@@ -93,7 +93,7 @@ def packet_handler(packet):
                     queryType = 'TXT'
                 elif packet[DNSQR].qtype == 28:
                     queryType = 'AAAA'
-                elif packet[DNSQR].qtype == 255:
+                elif packet[DNS].qd.qtype == 255:
                     print("OK")
                     queryType = 'ANY'
                 else: 
