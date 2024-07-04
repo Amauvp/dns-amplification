@@ -61,13 +61,13 @@ def packet_handler(packet):
             
                 packetInfo['Info'] += "Standard query <br>" + queryType + ' ' + str(packet[DNSQR].qname.decode())
 
-                # Store the summary of the packet
-                old_stdout = sys.stdout
-                sys.stdout = buffer = StringIO()
-                packet.show()
-                packetInfo['Summary'] += buffer.getvalue()
-                sys.stdout = old_stdout
-                socketio.emit('dns_packet', {'data': packetInfo})
+                # # Store the summary of the packet
+                # old_stdout = sys.stdout
+                # sys.stdout = buffer = StringIO()
+                # packet.show()
+                # packetInfo['Summary'] += buffer.getvalue()
+                # sys.stdout = old_stdout
+                # socketio.emit('dns_packet', {'data': packetInfo})
 
             # DNS response
             elif packet[DNS].qr == 1:
