@@ -58,6 +58,7 @@ def packet_handler(packet):
                 elif packet[DNS].qd.qtype == 255:
                     queryType = 'ANY'
                     anyRequest = packet[DNS].id
+                    print(anyRequest)
                 else:
                     queryType = ''
             
@@ -65,6 +66,7 @@ def packet_handler(packet):
 
             # DNS response
             elif packet[DNS].qr == 1:
+                print(packet[DNS].id == anyRequest)
                 packetInfo['Number'] = packet[DNS].id
                 packetInfo['Time'] = time.time() - captureTime
                 packetInfo['Source'] = packet[IP].src
