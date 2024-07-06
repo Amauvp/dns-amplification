@@ -27,11 +27,11 @@ def packet_handler(packet):
                  'Length': '', 'Info': '', 'Summary': ''}
     queryType = None
 
-    if DNS in packet:
+    print("ID of packet: " + str(packet[DNS].id))
+    if IP in packet and UDP in packet and DNS in packet:
         # DNS query
         # print(packet[DNSQR].qname.decode())
         if packet[DNSQR].qname.decode() == "amaury.thesis.io.":
-            print("ID of packet: " + str(packet[DNS].id))
             if packet[DNS].qr == 0:
                 packetInfo['Number'] = packet[DNS].id
                 packetInfo['Time'] = time.time() - captureTime
@@ -86,7 +86,7 @@ def packet_handler(packet):
                     queryType = 'TXT'
                 elif packet[DNSQR].qtype == 28:
                     queryType = 'AAAA'
-                elif packet[DNS].id == 255:
+                elif packet[DNSQR].qtype == 255:
                     queryType = 'ANY'
                 else: 
                     queryType = ''
