@@ -63,7 +63,7 @@ def packet_handler(packet):
 
             # DNS response
             elif packet[DNS].qr == 1:
-                print("Type of response: " + str(packet[DNS].qd.qtype))
+                print("Type of response: " + str(packet[DNSQR].qtype))
                 packetInfo['Number'] = packet[DNS].id
                 packetInfo['Time'] = time.time() - captureTime
                 packetInfo['Source'] = packet[IP].src
