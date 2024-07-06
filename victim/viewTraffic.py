@@ -28,6 +28,7 @@ def packet_handler(packet):
     queryType = None
 
     if IP in packet and UDP in packet and DNS in packet:
+        print("ID of packet: " + str(packet[DNS].id))
         # DNS query
         # print(packet[DNSQR].qname.decode())
         if packet[DNSQR].qname.decode() == "amaury.thesis.io.":
@@ -63,7 +64,6 @@ def packet_handler(packet):
 
             # DNS response
             elif packet[DNS].qr == 1:
-                print("ID of response: " + str(packet[DNS].id))
                 packetInfo['Number'] = packet[DNS].id
                 packetInfo['Time'] = time.time() - captureTime
                 packetInfo['Source'] = packet[IP].src
