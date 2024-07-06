@@ -27,7 +27,7 @@ def packet_handler(packet):
                  'Length': '', 'Info': '', 'Summary': ''}
     queryType = None
 
-    if IP in packet and UDP in packet and DNS in packet:
+    if UDP in packet and DNS in packet:
         print("ID of packet: " + str(packet[DNS].id))
         # DNS query
         # print(packet[DNSQR].qname.decode())
