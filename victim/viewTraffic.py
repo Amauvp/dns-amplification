@@ -16,139 +16,49 @@ socketio = SocketIO(app)
 global captureTime
 
 def packet_handler(packet):
-    """
-    This function is called for every packet sniffed. 
-    The packet is then parsed and the information is sent to the client.
-
-    :param packet: The packet sniffed by Scapy 
-    :type packet: scapy.packet.Packet
-    """
+    
     packetInfo = {'Number': '', 'Time': '', 'Source': '', 'Destination': '', 'Protocol': '', 
                  'Length': '', 'Info': '', 'Summary': ''}
     queryType = None
 
-    if packet.haslayer(IP) and packet.haslayer(UDP) and packet.haslayer(DNS):
-        print(f"Packet captured: {packet.summary()}")
-        # DNS query
+    if IP in packet and UDP in packet and DNS in packet:
         if packet[DNSQR].qname.decode() == "amaury.thesis.io.":
-            if packet[DNS].qr == 0:
-                packetInfo['Number'] = packet[DNS].id
-                packetInfo['Time'] = time.time() - captureTime
-                packetInfo['Source'] = packet[IP].src
-                packetInfo['Destination'] = packet[IP].dst
-                packetInfo['Protocol'] = 'DNS'
-                packetInfo['Length'] = len(packet[DNS])
+            packetInfo['Number'] = packet[DNS].id
+            packetInfo['Time'] = time.time() - captureTime
+            packetInfo['Source'] = packet[IP].src
+            packetInfo['Destination'] = packet[IP].dst
+            packetInfo['Protocol'] = 'DNS'
+            packetInfo['Length'] = len(packet[DNS])
 
-                # Get the query type
-                if packet[DNS].qd.qtype == 1:
-                    queryType = 'A'
-                elif packet[DNS].qd.qtype == 2:
-                    queryType = 'NS'
-                elif packet[DNS].qd.qtype == 5:
-                    queryType = 'CNAME'
-                elif packet[DNS].qd.qtype == 6:
-                    queryType = 'SOA'
-                elif packet[DNS].qd.qtype == 15:
-                    queryType = 'MX'
-                elif packet[DNS].qd.qtype == 16:
-                    queryType = 'TXT'
-                elif packet[DNS].qd.qtype == 28:
-                    queryType = 'AAAA'
-                elif packet[DNS].qd.qtype == 255:
-                    queryType = 'ANY'
-                else:
-                    queryType = ''
-            
-                packetInfo['Info'] += "Standard query <br>" + queryType + ' ' + str(packet[DNSQR].qname.decode())
+            # DNS query
+            if packet[DNS].qr == 0:
+                queryType = packet[DNSQR].qtype
+                queryTypeName = dns_query_type_to_string(queryType)
+                packetInfo['Info'] += "Standard query <br>" + queryTypeName + ' ' + str(packet[DNSQR].qname.decode())
 
             # DNS response
             elif packet[DNS].qr == 1:
-                packetInfo['Number'] = packet[DNS].id
-                packetInfo['Time'] = time.time() - captureTime
-                packetInfo['Source'] = packet[IP].src
-                packetInfo['Destination'] = packet[IP].dst
-                packetInfo['Protocol'] = 'DNS'
-                packetInfo['Length'] = len(packet[DNS])
-
-                # Get the query type
-                if packet[DNSQR].qtype == 1:
-                    queryType = 'A'
-                elif packet[DNSQR].qtype == 2:
-                    queryType = 'NS'
-                elif packet[DNSQR].qtype == 5:
-                    queryType = 'CNAME'
-                elif packet[DNSQR].qtype == 6:
-                    queryType = 'SOA'
-                elif packet[DNSQR].qtype == 15:
-                    queryType = 'MX'
-                elif packet[DNSQR].qtype == 16:
-                    queryType = 'TXT'
-                elif packet[DNSQR].qtype == 28:
-                    queryType = 'AAAA'
-                elif packet[DNSQR].qtype == 255:
-                    queryType = 'ANY'
-                else: 
-                    queryType = ''
-
-                packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
+                queryType = packet[DNSQR].qtype
+                queryTypeName = dns_query_type_to_string(queryType)
+                packetInfo['Info'] += 'Standard query response ' + queryTypeName + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
 
                 # Get the answer type and all the answers
                 if packet[DNS].ancount > 0:
                     for i in range(packet[DNS].ancount):
-                        if packet[DNS].an[i].type == 1:
-                            recordType = 'A'
-                        elif packet[DNS].an[i].type == 2:
-                            recordType = 'NS'
-                        elif packet[DNS].an[i].type == 5:
-                            recordType = 'CNAME'
-                        elif packet[DNS].an[i].type == 6:
-                            recordType = 'SOA'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].mname.decode()) + " " + str(packet[DNS].an[i].rname.decode()) + " " + str(packet[DNS].an[i].serial)
-                            complete_record += " " + str(packet[DNS].an[i].refresh) + " " + str(packet[DNS].an[i].retry) + " " + str(packet[DNS].an[i].expire) + " " + str(packet[DNS].an[i].minimum)
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 15:
-                            recordType = 'MX'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].ttl) + " " + str(packet[DNS].an[i].preference) + " " + str(packet[DNS].an[i].exchange.decode())
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 16:
-                            recordType = 'TXT'
-                        elif packet[DNS].an[i].type == 28:
-                            recordType = 'AAAA'
-                        elif packet[DNS].an[i].type == 43:
-                            recordType = 'DS'
-                            complete_record = recordType
-                            complete_record += " " + str(packet[DNS].an[i].keytag) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].digesttype) + " " + str(packet[DNS].an[i].digest.decode())
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 46:
-                            recordType = 'RRSIG'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].typecovered) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].labels)
-                            complete_record += " " + str(packet[DNS].an[i].originalttl) + " " + str(packet[DNS].an[i].expiration) + " " + str(packet[DNS].an[i].inception) + " " + str(packet[DNS].an[i].keytag)
-                            complete_record += " " + str(packet[DNS].an[i].signersname.decode()) + " " + base64.b64encode(packet[DNS].an[i].signature).decode('ascii')
-                            
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 47:
-                            recordType = 'NSEC'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].nextname.decode()) + " " + str(packet[DNS].an[i].typebitmaps)
-                            packetInfo += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 48:
-                            recordType = 'DNSKEY'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].flags) + " " + str(packet[DNS].an[i].protocol) + " " + str(packet[DNS].an[i].algorithm) + " " + packet[DNS].an[i].publickey.decode()
-                            packetInfo += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 50:
-                            recordType = 'NSEC3'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].hashalg) + " " + str(packet[DNS].an[i].flags) + " " + str(packet[DNS].an[i].iterations)
-                            complete_record += " " + str(packet[DNS].an[i].salt.decode()) + " " + str(packet[DNS].an[i].hashalg) + " " + str(packet[DNS].an[i].nexthashedownername.decode())
-                            complete_record += " " + str(packet[DNS].an[i].typebitmaps)
+                        recordType = packet[DNS].an[i].type
+                        recordTypeName = dns_query_type_to_string(recordType)
+                        complete_record = recordTypeName
 
-                            packetInfo += '\n' + complete_record + "<br>"
-                        else:
-                            queryType = ''
+                        if recordType in [6, 15, 43, 46, 47, 48, 50]:  # SOA, MX, DS, RRSIG, NSEC, DNSKEY, NSEC3
+                            complete_record += ' ' + extract_special_record_data(packet[DNS].an[i])
 
                         if hasattr(packet[DNS].an[i], 'rdata'):
                             if isinstance(packet[DNS].an[i].rdata, bytes):
-                                packetInfo['Info'] += '\n' + recordType + ' ' + str(packet[DNS].an[i].rdata.decode()) + "<br>"
+                                complete_record += ' ' + str(packet[DNS].an[i].rdata.decode())
                             else:
-                                packetInfo['Info'] += '\n' + recordType + ' ' + str(packet[DNS].an[i].rdata) + "<br>"
+                                complete_record += ' ' + str(packet[DNS].an[i].rdata)
+
+                        packetInfo['Info'] += '\n' + complete_record + "<br>"
 
             # Store the summary of the packet
             old_stdout = sys.stdout
@@ -157,6 +67,44 @@ def packet_handler(packet):
             packetInfo['Summary'] += buffer.getvalue()
             sys.stdout = old_stdout
             socketio.emit('dns_packet', {'data': packetInfo})
+
+def dns_query_type_to_string(qtype):
+    """
+    Convert DNS query type to string.
+    """
+    query_type_dict = {
+        1: 'A',
+        2: 'NS',
+        5: 'CNAME',
+        6: 'SOA',
+        15: 'MX',
+        16: 'TXT',
+        28: 'AAAA',
+        255: 'ANY'
+    }
+    return query_type_dict.get(qtype, '')
+
+def extract_special_record_data(record):
+    """
+    Extract data from special DNS records such as SOA, MX, etc.
+    """
+    if record.type == 6:  # SOA
+        return f"{record.mname.decode()} {record.rname.decode()} {record.serial} {record.refresh} {record.retry} {record.expire} {record.minimum}"
+    elif record.type == 15:  # MX
+        return f"{record.ttl} {record.preference} {record.exchange.decode()}"
+    elif record.type == 43:  # DS
+        return f"{record.keytag} {record.algorithm} {record.digesttype} {record.digest.decode()}"
+    elif record.type == 46:  # RRSIG
+        return f"{record.typecovered} {record.algorithm} {record.labels} {record.originalttl} {record.expiration} {record.inception} {record.keytag} {record.signersname.decode()} {base64.b64encode(record.signature).decode('ascii')}"
+    elif record.type == 47:  # NSEC
+        return f"{record.nextname.decode()} {record.typebitmaps}"
+    elif record.type == 48:  # DNSKEY
+        return f"{record.flags} {record.protocol} {record.algorithm} {record.publickey.decode()}"
+    elif record.type == 50:  # NSEC3
+        return f"{record.hashalg} {record.flags} {record.iterations} {record.salt.decode()} {record.hashalg} {record.nexthashedownername.decode()} {record.typebitmaps}"
+    
+    return ''
+
 
 def sniffAllPackets():
     """
