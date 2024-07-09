@@ -11,7 +11,7 @@ import base64
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(app, max_http_buffer_size=10000000)
 
 global captureTime
 
