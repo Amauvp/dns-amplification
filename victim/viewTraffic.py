@@ -28,7 +28,6 @@ def packet_handler(packet):
     queryType = None
 
     if packet.haslayer(IP) and packet.haslayer(UDP) and packet.haslayer(DNS):
-        print(f"Packet captured: {packet.summary()}")
         # DNS query
         if packet[DNSQR].qname.decode() == "amaury.thesis.io.":
             if packet[DNS].qr == 0:
