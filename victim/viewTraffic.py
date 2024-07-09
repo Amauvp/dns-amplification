@@ -49,9 +49,23 @@ def packet_handler(packet):
                         recordTypeName = dns_query_type_to_string(recordType)
                         complete_record = recordTypeName
 
-                        if recordType in [6, 15, 43, 46, 47, 48, 50]:  # SOA, MX, DS, RRSIG, NSEC, DNSKEY, NSEC3
-                            complete_record += ' ' + extract_special_record_data(packet[DNS].an[i])
+                        # if recordType in [6, 15, 43, 46, 47, 48, 50]:  # SOA, MX, DS, RRSIG, NSEC, DNSKEY, NSEC3
+                        #     complete_record += ' ' + extract_special_record_data(packet[DNS].an[i])
 
+                        if recordType == 'SOA':
+                            complete_record += ' ' + f"{packet[DNS].an[i].mname.decode()} {packet[DNS].an[i].rname.decode()} {packet[DNS].an[i].serial} {packet[DNS].an[i].refresh} {packet[DNS].an[i].retry} {packet[DNS].an[i].expire} {packet[DNS].an[i].minimum}"
+                        elif recordType == 'MX':
+                            complete_record += ' ' + f"{packet[DNS].an[i].ttl} {packet[DNS].an[i].preference} {packet[DNS].an[i].exchange.decode()}"
+                        elif recordType == 'DS':
+                            complete_record += ' ' + f"{packet[DNS].an[i].keytag} {packet[DNS].an[i].algorithm} {packet[DNS].an[i].digesttype} {packet[DNS].an[i].digest.decode()}"
+                        elif recordType == 'RRSIG':
+                            complete_record += ' ' + f"{packet[DNS].an[i].typecovered} {packet[DNS].an[i].algorithm} {packet[DNS].an[i].labels} {packet[DNS].an[i].originalttl} {packet[DNS].an[i].expiration} {packet[DNS].an[i].inception} {packet[DNS].an[i].keytag} {packet[DNS].an[i].signersname.decode()} {base64.b64encode(packet[DNS].an[i].signature).decode('ascii')}"
+                        elif recordType == 'NSEC':
+                            complete_record += ' ' + f"{packet[DNS].an[i].nextname.decode()} {packet[DNS].an[i].typebitmaps}"
+                        elif recordType == 'DNSKEY':
+                            complete_record += ' ' + f"{packet[DNS].an[i].flags} {packet[DNS].an[i].protocol} {packet[DNS].an[i].algorithm} {packet[DNS].an[i].publickey.decode()}"
+                        elif recordType == 'NSEC3':
+                            complete_record += ' ' + f"{packet[DNS].an[i].hashalg} {packet[DNS].an[i].flags} {packet[DNS].an[i].iterations} {packet[DNS].an[i].salt.decode()} {packet[DNS].an[i].hashalg} {packet[DNS].an[i].nexthashedownername.decode()} {packet[DNS].an[i].typebitmaps}"
                         if hasattr(packet[DNS].an[i], 'rdata'):
                             if isinstance(packet[DNS].an[i].rdata, bytes):
                                 complete_record += ' ' + str(packet[DNS].an[i].rdata.decode())
@@ -80,30 +94,35 @@ def dns_query_type_to_string(qtype):
         15: 'MX',
         16: 'TXT',
         28: 'AAAA',
+        43: 'DS',
+        46: 'RRSIG',
+        47: 'NSEC',
+        48: 'DNSKEY',
+        50: 'NSEC3',
         255: 'ANY'
     }
     return query_type_dict.get(qtype, '')
 
-def extract_special_record_data(record):
-    """
-    Extract data from special DNS records such as SOA, MX, etc.
-    """
-    if record.type == 6:  # SOA
-        return f"{record.mname.decode()} {record.rname.decode()} {record.serial} {record.refresh} {record.retry} {record.expire} {record.minimum}"
-    elif record.type == 15:  # MX
-        return f"{record.ttl} {record.preference} {record.exchange.decode()}"
-    elif record.type == 43:  # DS
-        return f"{record.keytag} {record.algorithm} {record.digesttype} {record.digest.decode()}"
-    elif record.type == 46:  # RRSIG
-        return f"{record.typecovered} {record.algorithm} {record.labels} {record.originalttl} {record.expiration} {record.inception} {record.keytag} {record.signersname.decode()} {base64.b64encode(record.signature).decode('ascii')}"
-    elif record.type == 47:  # NSEC
-        return f"{record.nextname.decode()} {record.typebitmaps}"
-    elif record.type == 48:  # DNSKEY
-        return f"{record.flags} {record.protocol} {record.algorithm} {record.publickey.decode()}"
-    elif record.type == 50:  # NSEC3
-        return f"{record.hashalg} {record.flags} {record.iterations} {record.salt.decode()} {record.hashalg} {record.nexthashedownername.decode()} {record.typebitmaps}"
+# def extract_special_record_data(record):
+#     """
+#     Extract data from special DNS records such as SOA, MX, etc.
+#     """
+#     if record.type == 6:  # SOA
+#         return f"{record.mname.decode()} {record.rname.decode()} {record.serial} {record.refresh} {record.retry} {record.expire} {record.minimum}"
+#     elif record.type == 15:  # MX
+#         return f"{record.ttl} {record.preference} {record.exchange.decode()}"
+#     elif record.type == 43:  # DS
+#         return f"{record.keytag} {record.algorithm} {record.digesttype} {record.digest.decode()}"
+#     elif record.type == 46:  # RRSIG
+#         return f"{record.typecovered} {record.algorithm} {record.labels} {record.originalttl} {record.expiration} {record.inception} {record.keytag} {record.signersname.decode()} {base64.b64encode(record.signature).decode('ascii')}"
+#     elif record.type == 47:  # NSEC
+#         return f"{record.nextname.decode()} {record.typebitmaps}"
+#     elif record.type == 48:  # DNSKEY
+#         return f"{record.flags} {record.protocol} {record.algorithm} {record.publickey.decode()}"
+#     elif record.type == 50:  # NSEC3
+#         return f"{record.hashalg} {record.flags} {record.iterations} {record.salt.decode()} {record.hashalg} {record.nexthashedownername.decode()} {record.typebitmaps}"
     
-    return ''
+#     return ''
 
 
 def sniffAllPackets():
