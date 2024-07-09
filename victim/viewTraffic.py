@@ -92,6 +92,7 @@ def packet_handler(packet):
                 packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
 
                 # Get the answer type and all the answers
+                print("Number of records: " + str(packet[DNS].ancount))
                 if packet[DNS].ancount > 0:
                     for i in range(packet[DNS].ancount):
                         if packet[DNS].an[i].type == 1:
