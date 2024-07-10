@@ -23,7 +23,7 @@ def sendQueries(dnsSource, dnsDestination, queryName, duration, use_dnssec):
 
             if use_dnssec:
                 dnsQuery[DNS].ad = 0
-                dnsQuery[DNS].cd = 1
+                dnsQuery[DNS].cd = 0
                 dnsQuery[DNS].qr = 0
                 dnsQuery[DNS].aa = 0
                 dnsQuery[DNS].ra = 0

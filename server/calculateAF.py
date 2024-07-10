@@ -73,6 +73,12 @@ if __name__ == '__main__':
 
     sniffPackets(args.srcIP, args.dstIP, args.qname)
     results = calculateAmplificationFactors()
+    with open("./queries.json", 'w') as f2:
+        json.dump(queriesInfo, f2)
+
+    with open("./responses.json", 'w') as f3:
+        json.dump(responsesInfo, f3)
+        
     meanFactors = meanAmplificationFactor(results)
 
     print('Number of queries: ', len(queriesInfo))
@@ -94,9 +100,3 @@ if __name__ == '__main__':
 
     with open("./meanAF.json", 'w') as f1:
         json.dump(meanFactors, f1)
-
-    with open("./queries.json", 'w') as f2:
-        json.dump(queriesInfo, f2)
-
-    with open("./responses.json", 'w') as f3:
-        json.dump(responsesInfo, f3)
