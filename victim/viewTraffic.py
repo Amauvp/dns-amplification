@@ -6,12 +6,11 @@ import threading
 from io import StringIO
 import sys
 import psutil
-import binascii
 import base64
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, max_http_buffer_size=10000000)
+socketio = SocketIO(app)
 
 global captureTime
 
@@ -84,7 +83,6 @@ def packet_handler(packet):
                 packetInfo['Info'] += 'Standard query response ' + queryType + ' ' + str(packet[DNSQR].qname.decode()) + "<br>"
 
                 # Get the answer type and all the answers
-                print("Number of records: " + str(packet[DNS].ancount))
                 if packet[DNS].ancount > 0:
                     for i in range(packet[DNS].ancount):
                         if packet[DNS].an[i].type == 1:
