@@ -95,13 +95,10 @@ def packet_handler(packet):
                             recordType = 'CNAME'
                         elif packet[DNS].an[i].type == 6:
                             recordType = 'SOA'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].mname.decode()) + " " + str(packet[DNS].an[i].rname.decode()) + " " + str(packet[DNS].an[i].serial)
-                            complete_record += " " + str(packet[DNS].an[i].refresh) + " " + str(packet[DNS].an[i].retry) + " " + str(packet[DNS].an[i].expire) + " " + str(packet[DNS].an[i].minimum)
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
+                            packetInfo['Info'] += '\n' + recordType + " " + str(packet[DNS].an[i].mname.decode()) + " " + str(packet[DNS].an[i].rname.decode()) + "<br>"
                         elif packet[DNS].an[i].type == 15:
                             recordType = 'MX'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].ttl) + " " + str(packet[DNS].an[i].preference) + " " + str(packet[DNS].an[i].exchange.decode())
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
+                            packetInfo['Info'] += '\n' + recordType + " " + str(packet[DNS].an[i].preference) + " " + str(packet[DNS].an[i].exchange.decode()) + "<br>"
                         elif packet[DNS].an[i].type == 16:
                             recordType = 'TXT'
                         elif packet[DNS].an[i].type == 28:
