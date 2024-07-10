@@ -34,6 +34,7 @@ def sendQueries(dnsSource, dnsDestination, queryName, duration, use_dnssec):
                 dnsQuery[DNS].qr = 0
                 dnsQuery[DNS].aa = 0
                 dnsQuery[DNS].ra = 0
+                dnsQuery[DNS].ar = DNSRROPT(rclass=8192)
 
             try:
                 send(dnsQuery, verbose=0)
