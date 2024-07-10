@@ -106,33 +106,33 @@ def packet_handler(packet):
                             recordType = 'TXT'
                         elif packet[DNS].an[i].type == 28:
                             recordType = 'AAAA'
-                        elif packet[DNS].an[i].type == 43:
-                            recordType = 'DS'
-                            complete_record = recordType
-                            complete_record += " " + str(packet[DNS].an[i].keytag) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].digesttype) + " " + str(packet[DNS].an[i].digest.decode())
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 46:
-                            recordType = 'RRSIG'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].typecovered) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].labels)
-                            complete_record += " " + str(packet[DNS].an[i].originalttl) + " " + str(packet[DNS].an[i].expiration) + " " + str(packet[DNS].an[i].inception) + " " + str(packet[DNS].an[i].keytag)
-                            complete_record += " " + str(packet[DNS].an[i].signersname.decode()) + " " + base64.b64encode(packet[DNS].an[i].signature).decode('ascii')
+                        # elif packet[DNS].an[i].type == 43:
+                        #     recordType = 'DS'
+                        #     complete_record = recordType
+                        #     complete_record += " " + str(packet[DNS].an[i].keytag) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].digesttype) + " " + str(packet[DNS].an[i].digest.decode())
+                        #     packetInfo['Info'] += '\n' + complete_record + "<br>"
+                        # elif packet[DNS].an[i].type == 46:
+                        #     recordType = 'RRSIG'
+                        #     complete_record = recordType + " " + str(packet[DNS].an[i].typecovered) + " " + str(packet[DNS].an[i].algorithm) + " " + str(packet[DNS].an[i].labels)
+                        #     complete_record += " " + str(packet[DNS].an[i].originalttl) + " " + str(packet[DNS].an[i].expiration) + " " + str(packet[DNS].an[i].inception) + " " + str(packet[DNS].an[i].keytag)
+                        #     complete_record += " " + str(packet[DNS].an[i].signersname.decode()) + " " + base64.b64encode(packet[DNS].an[i].signature).decode('ascii')
                             
-                            packetInfo['Info'] += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 47:
-                            recordType = 'NSEC'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].nextname.decode()) + " " + str(packet[DNS].an[i].typebitmaps)
-                            packetInfo += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 48:
-                            recordType = 'DNSKEY'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].flags) + " " + str(packet[DNS].an[i].protocol) + " " + str(packet[DNS].an[i].algorithm) + " " + packet[DNS].an[i].publickey.decode()
-                            packetInfo += '\n' + complete_record + "<br>"
-                        elif packet[DNS].an[i].type == 50:
-                            recordType = 'NSEC3'
-                            complete_record = recordType + " " + str(packet[DNS].an[i].hashalg) + " " + str(packet[DNS].an[i].flags) + " " + str(packet[DNS].an[i].iterations)
-                            complete_record += " " + str(packet[DNS].an[i].salt.decode()) + " " + str(packet[DNS].an[i].hashalg) + " " + str(packet[DNS].an[i].nexthashedownername.decode())
-                            complete_record += " " + str(packet[DNS].an[i].typebitmaps)
+                        #     packetInfo['Info'] += '\n' + complete_record + "<br>"
+                        # elif packet[DNS].an[i].type == 47:
+                        #     recordType = 'NSEC'
+                        #     complete_record = recordType + " " + str(packet[DNS].an[i].nextname.decode()) + " " + str(packet[DNS].an[i].typebitmaps)
+                        #     packetInfo += '\n' + complete_record + "<br>"
+                        # elif packet[DNS].an[i].type == 48:
+                        #     recordType = 'DNSKEY'
+                        #     complete_record = recordType + " " + str(packet[DNS].an[i].flags) + " " + str(packet[DNS].an[i].protocol) + " " + str(packet[DNS].an[i].algorithm) + " " + packet[DNS].an[i].publickey.decode()
+                        #     packetInfo += '\n' + complete_record + "<br>"
+                        # elif packet[DNS].an[i].type == 50:
+                        #     recordType = 'NSEC3'
+                        #     complete_record = recordType + " " + str(packet[DNS].an[i].hashalg) + " " + str(packet[DNS].an[i].flags) + " " + str(packet[DNS].an[i].iterations)
+                        #     complete_record += " " + str(packet[DNS].an[i].salt.decode()) + " " + str(packet[DNS].an[i].hashalg) + " " + str(packet[DNS].an[i].nexthashedownername.decode())
+                        #     complete_record += " " + str(packet[DNS].an[i].typebitmaps)
 
-                            packetInfo += '\n' + complete_record + "<br>"
+                        #     packetInfo += '\n' + complete_record + "<br>"
                         else:
                             queryType = ''
 
