@@ -28,16 +28,15 @@ def packet_handler(packet):
     queryType = None
 
     if packet.haslayer(IP) and packet.haslayer(UDP) and packet.haslayer(DNS):
+        packetInfo['Number'] = packet[DNS].id
+        packetInfo['Time'] = time.time() - captureTime
+        packetInfo['Source'] = packet[IP].src
+        packetInfo['Destination'] = packet[IP].dst
+        packetInfo['Protocol'] = 'DNS'
+        packetInfo['Length'] = len(packet[DNS])
         # DNS query
         if packet[DNSQR].qname.decode() == "amaury.thesis.io.":
             if packet[DNS].qr == 0:
-                packetInfo['Number'] = packet[DNS].id
-                packetInfo['Time'] = time.time() - captureTime
-                packetInfo['Source'] = packet[IP].src
-                packetInfo['Destination'] = packet[IP].dst
-                packetInfo['Protocol'] = 'DNS'
-                packetInfo['Length'] = len(packet[DNS])
-
                 # Get the query type
                 if packet[DNS].qd.qtype == 1:
                     queryType = 'A'
@@ -62,13 +61,6 @@ def packet_handler(packet):
 
             # DNS response
             elif packet[DNS].qr == 1:
-                packetInfo['Number'] = packet[DNS].id
-                packetInfo['Time'] = time.time() - captureTime
-                packetInfo['Source'] = packet[IP].src
-                packetInfo['Destination'] = packet[IP].dst
-                packetInfo['Protocol'] = 'DNS'
-                packetInfo['Length'] = len(packet[DNS])
-
                 # Get the query type
                 if packet[DNSQR].qtype == 1:
                     queryType = 'A'
