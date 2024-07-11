@@ -24,7 +24,7 @@ def packetHandler(packet, srcIP, dstIP, qname):
         elif packet[IP].src == dstIP and packet[IP].dst == srcIP and packet[DNS].qr == 1 and str(packet[DNS].qd.qname.decode()) == qname + '.':
             responseInfo = [packet[DNS].qd.qtype, len(packet[DNS])]
             responsesInfo[packet[DNS].id] = responseInfo
-
+    
 def sniffPackets(srcIP, dstIP, qname):
     """
     This function is used to sniff the packets.
@@ -33,7 +33,7 @@ def sniffPackets(srcIP, dstIP, qname):
     :param dstIP: The destination IP address (str)
     :param qname: The query name (str)
     """
-    sniff(filter=f"udp and port 53", timeout=60, prn=lambda x: packetHandler(x, srcIP, dstIP, qname))
+    sniff(iface='enp0s3', timeout=60, prn=lambda x: packetHandler(x, srcIP, dstIP, qname), store=0)
 
 def calculateAmplificationFactors():
     """
@@ -59,7 +59,7 @@ def meanAmplificationFactor(allFactors):
     """
     meanFactors = {}
     for queryType in allFactors:
-        meanFactors[queryType] = sum(allFactors[queryType]) / len(allFactors[queryType])
+        meanFactors[queryType] = sum(allFactors[queryType]) / len(allFactors[queryType]) if len(allFactors[queryType]) > 0 else 0
 
     return meanFactors
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     with open("./responses.json", 'w') as f3:
         json.dump(responsesInfo, f3)
-        
+
     meanFactors = meanAmplificationFactor(results)
 
     print('Number of queries: ', len(queriesInfo))

@@ -104,7 +104,7 @@ def extract_special_record_data(record):
     elif record.type == 47:  # NSEC
         return f"{record.nextname.decode()} {record.typebitmaps}"
     elif record.type == 48:  # DNSKEY
-        return f"{record.flags} {record.protocol} {record.algorithm} {record.publickey.decode()}"
+        return f"{record.flags} {record.protocol} {record.algorithm} {base64.b64encode(record.publickey).decode('ascii')}"
     elif record.type == 50:  # NSEC3
         return f"{record.hashalg} {record.flags} {record.iterations} {record.salt.decode()} {record.hashalg} {record.nexthashedownername.decode()} {record.typebitmaps}"
     
