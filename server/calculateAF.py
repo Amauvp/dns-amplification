@@ -35,13 +35,19 @@ def sniffPackets(srcIP, dstIP, qname):
     """
     sniff(iface='enp0s3', timeout=60, prn=lambda x: packetHandler(x, srcIP, dstIP, qname), store=0)
 
-def calculateAmplificationFactors():
+def calculateAmplificationFactors(use_dnssec):
     """
     This function is used to calculate the amplification factor.
 
     :return: The amplification factor (dict)
     """
     results = {'255': [], '1': [], '28': [], '5': [], '15': [], '2': [], '6': [], '16': []}
+
+    if use_dnssec:
+        results['46'] = []
+        results['47'] = []
+        results['48'] = []
+
     for queryId in queriesInfo:
         for responseId in responsesInfo:
             if queryId == responseId:
@@ -68,11 +74,12 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--srcIP', type=str, help='Source IP')
     parser.add_argument('-d', '--dstIP', type=str, help='Destination IP')
     parser.add_argument('-q', '--qname', type=str, help='Query name')
+    parser.add_argument('--dnssec', action='store_true', help='Use DNSSEC')
 
     args = parser.parse_args()
 
     sniffPackets(args.srcIP, args.dstIP, args.qname)
-    results = calculateAmplificationFactors()
+    results = calculateAmplificationFactors(args.dnssec)
     with open("./queries.json", 'w') as f2:
         json.dump(queriesInfo, f2)
 
@@ -92,6 +99,11 @@ if __name__ == '__main__':
     print('Number of NS requests: ', len(results['2']))
     print('Number of SOA requests: ', len(results['6']))
     print('Number of TXT requests: ', len(results['16']))
+
+    if args.dnssec:
+        print('Number of RRSIG requests: ', len(results['46']))
+        print('Number of NSEC requests: ', len(results['47']))
+        print('Number of DNSKEY requests: ', len(results['48']))
 
     print('Mean amplification factors: ', meanFactors)
 

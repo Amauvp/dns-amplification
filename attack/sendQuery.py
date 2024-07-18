@@ -13,6 +13,10 @@ def sendQueries(dnsSource, dnsDestination, queryName, duration, use_dnssec):
     """
     queryTypes = ["ALL", "A", "AAAA", "CNAME", "MX", "NS", "SOA", "TXT"]
 
+    if use_dnssec:
+        dnssecRecordTypes = ["RRSIG", "DNSKEY", "NSEC"]
+        queryTypes.extend(dnssecRecordTypes)
+
     packetNumber = 0
     endTime = time.time() + duration
 
@@ -22,18 +26,12 @@ def sendQueries(dnsSource, dnsDestination, queryName, duration, use_dnssec):
             dnsQuery = IP(src=dnsSource, dst=dnsDestination) / UDP(sport=RandShort(), dport=53) / DNS(id=packetNumber, rd=1, qd=DNSQR(qname=queryName, qtype=queryType))
 
             if use_dnssec:
-                dnsQuery[DNS].ad = 1
-                dnsQuery[DNS].cd = 1
-                dnsQuery[DNS].qr = 0
-                dnsQuery[DNS].aa = 0
-                dnsQuery[DNS].ra = 0
-                dnsQuery[DNS].ar = DNSRROPT(rclass=8192)
-            else:
-                dnsQuery[DNS].ad = 0
                 dnsQuery[DNS].cd = 0
                 dnsQuery[DNS].qr = 0
-                dnsQuery[DNS].aa = 0
-                dnsQuery[DNS].ra = 0
+                dnsQuery[DNS].ar = DNSRROPT(rclass=8192)
+            else:
+                dnsQuery[DNS].cd = 1
+                dnsQuery[DNS].qr = 0
                 dnsQuery[DNS].ar = DNSRROPT(rclass=8192)
 
             try:

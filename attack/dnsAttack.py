@@ -17,18 +17,12 @@ def sendQuery(dnsSource, dnsDestination, queryName, duration, packetNumber, use_
         dnsQuery = IP(src=dnsSource, dst=dnsDestination) / UDP(sport=RandShort(), dport=53) / DNS(id=currentPacketNumber, rd=1, qd=DNSQR(qname=queryName, qtype=queryType))
 
         if use_dnssec:
-            dnsQuery[DNS].ad = 1
             dnsQuery[DNS].cd = 1
             dnsQuery[DNS].qr = 0
-            dnsQuery[DNS].aa = 0
-            dnsQuery[DNS].ra = 0
             dnsQuery[DNS].ar = DNSRROPT(rclass=8192)
         else:
-            dnsQuery[DNS].ad = 0
             dnsQuery[DNS].cd = 0
             dnsQuery[DNS].qr = 0
-            dnsQuery[DNS].aa = 0
-            dnsQuery[DNS].ra = 0
             dnsQuery[DNS].ar = DNSRROPT(rclass=8192)
 
         try:
