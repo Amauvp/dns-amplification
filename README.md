@@ -54,3 +54,12 @@ With DNSSEC:
 ```bash
 sudo python3.9 attack/dnsAttack.py -s <victimAddress> -d 192.168.68.53 -q amaury.thesis.io -t 60 -n <Number of process> --dnssec
 ```
+
+## Scenarios of use
+
+To illustrate how different scripts can be used to observe and study this attack, here are several videos featuring different usage scenarios.
+
+### First Scenario
+
+This scenario shows how an attacker can run the sendQuery.py script to launch DNS queries designed to measure amplification factors. This scenario also shows how to run the calculateAF.py script on the DNS server in order to calculate and observe amplification factors. Finally, this scenario shows how to run the viewTraffic.py script on the victim machine, in order to observe DNS traffic and performance on this machine.
+
