@@ -65,3 +65,16 @@ This scenario shows how an attacker can run the sendQuery.py script to launch DN
 
 #### Without DNSSEC
 ![](video/dns-calculateAF-full.gif)
+
+#### With DNSSEC
+![](video/dnssec-calculateAF-full.gif)
+
+### Second Scenario
+
+This scenario shows how to run the viewTraffic.py script on the victim machine to observe DNS traffic and performance. This script also shows how to run the dnsAttack.py script to launch the attack from the attacking machine, in order to observe the consequences of this attack on the victim's side.
+
+#### Without DNSSEC
+![](video/dnsAttack-without-dnssec-full.gif)
+
+#### With DNSSEC
+![](video/dnsAttack-dnssec-full.gif)
