@@ -28,7 +28,7 @@ def sendQueries(dnsSource, dnsDestination, queryName, duration, use_dnssec):
             if use_dnssec:
                 dnsQuery[DNS].cd = 0
                 dnsQuery[DNS].qr = 0
-                dnsQuery[DNS].ar = DNSRROPT(rclass=16384)
+                dnsQuery[DNS].ar = DNSRROPT(rclass=20000)
             else:
                 dnsQuery[DNS].cd = 1
                 dnsQuery[DNS].qr = 0
